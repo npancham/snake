@@ -2,6 +2,7 @@ import numpy as np
 import pygame
 import sys
 from snake import Game
+from snake_solver import Solver
 
 
 class Button:
@@ -90,18 +91,11 @@ def play():
 
 
 def solve():
-    rendered_message = font_48.render("Coming soon!", True, WHITE)
-    back_button = Button("\u2022 Back", font_36, SCREEN_WIDTH / 2, SCREEN_HEIGHT * 2 / 3, WHITE, BLACK, None)
+    solver = Solver(N_ROWS, N_COLUMNS)
 
     running = True
 
     while running:
-        screen.fill(BLACK)
-        screen.blit(rendered_message, rendered_message.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3)))
-        back_button.render()
-
-        if mouse_is_at_button(back_button):
-            draw_hover_effect(back_button)
 
         for event in pygame.event.get():
             # Did the user click the window close button?
@@ -109,11 +103,21 @@ def solve():
                 pygame.quit()
                 sys.exit()
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if mouse_is_at_button(back_button):
-                    running = False
+        if not solver.solve():
+            running = False
+
+        screen.fill(empty_cell_color)
+        draw_grid()
+        draw_snake(solver.get_snake_head_coordinates(), solver.get_snake_body_coordinates())
+        draw_food(solver.get_food_coordinates())
+        draw_walls()
+        render_score(solver.get_score())
 
         pygame.display.flip()
+
+        clock.tick(SNAKE_SPEED)
+
+    game_over(solver.get_score())
 
 
 def game_over(score):
