@@ -70,6 +70,21 @@ class Grid:
         self.rows = rows
         self.columns = columns
 
+    def index_to_coordinates(self, index):
+        if index < 0 or index >= self.rows * self.columns:
+            return None
+
+        x = index // self.rows
+        y = index % self.rows
+        return np.array([x, y])
+
+    def coordinates_to_index(self, coordinates):
+        if coordinates[0] < 0 or coordinates[1] < 0 or coordinates[0] >= self.columns or coordinates[1] >= self.rows:
+            return None
+
+        index = coordinates[0] * self.rows + coordinates[1]
+        return index
+
 
 class Game:
     def __init__(self, rows, columns):
